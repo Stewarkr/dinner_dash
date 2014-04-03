@@ -1,4 +1,20 @@
-<p id="notice"><%= notice %></p>
+<h1>Your Order</h1>
 
-<%= link_to 'Edit', edit_order_path(@order) %> |
+<p><strong>Ordered By:</strong> <%= @order.user.name %> (<%= mail_to(@order.user.email) %>)
+<p><strong>Ordered At:</strong> <%= @order.created_at %></p>
+<p><strong>Pickup At:</strong> <%= @order.pickup_at %></p>
+<p><strong>Status:</strong> <%= @order.order_status.humanize %></p>
+
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Items</h3>
+  </div>
+  <ul class="list-group">
+    <%= render @order.items %>
+  </ul>
+  <div class="panel-footer text-right">
+    Total: <strong><%= number_to_currency @order.total %></strong>
+  </div>
+</div>
+
 <%= link_to 'Back', orders_path %>

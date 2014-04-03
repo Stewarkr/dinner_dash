@@ -1,4 +1,7 @@
 class OrdersController < ApplicationController
+  
+  include ActionView::Helpers::DateHelper
+  
   before_action :set_order, only: [:show, :edit, :update, :destroy]
   before_action :authorized_for_admin?, only: [:edit, :update, :destroy]
   before_action :authorized?, only: [:new, :create, :index, :show]
@@ -6,7 +9,7 @@ class OrdersController < ApplicationController
   # GET /orders
   # GET /orders.json
   def index
-      @orders = is_admin? ? Order.all : current_user.orders
+    @orders = is_admin? ? Order.all : current_user.orders
   end
 
   # GET /orders/1
@@ -21,10 +24,13 @@ class OrdersController < ApplicationController
   # POST /orders
   # POST /orders.json
   def create
-    @order = current_user.orders.build
+    @order = current_user.orders.build(order_params)
     @order.item_ids = current_cart.item_ids
     if @order.save
-      redirect_to order_path(@order), notice: 'Your order has been created. It will be ready for pickup in 15 minutes.'   
+      current_cart.empty!
+      relative_time = distance_of_time_in_words Time.zone.now, @order.pickup_at
+      message = "Your order has been created. It will be ready for pickup in #{relative_time}."
+      redirect_to order_path(@order), notice: message
     else
       redirect_to cart_path, error: 'Order could not be created'
     end
@@ -35,7 +41,7 @@ class OrdersController < ApplicationController
   def update
     respond_to do |format|
       if @order.update(order_params)
-        format.html { redirect_to @order, notice: 'Order was successfully updated.' }
+        format.html { redirect_to orders_path, notice: 'Order was successfully updated.' }
         format.json { head :no_content }
       else
         format.html { render action: 'edit' }

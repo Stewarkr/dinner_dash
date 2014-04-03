@@ -19,12 +19,24 @@ class Cart
     Item.find @session[:item_ids]
   end
 
+  def item_ids
+    @session[:item_ids]
+  end
+
   def items_count
     @session[:item_ids].size
   end
 
   def empty?
     @session[:item_ids].empty?
+  end
+
+  def empty!
+    @session[:item_ids] = []
+  end
+
+  def total
+    Item.where(id: item_ids).sum(:price)
   end
 
 end
