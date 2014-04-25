@@ -81,7 +81,7 @@ class OrdersController < ApplicationController
     else
       message = "Order could not be updated."
     end
-    redirect_to orders_path, alert: message
+    redirect_to order_path, alert: message
   end
 
   private

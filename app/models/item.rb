@@ -6,8 +6,8 @@ class Item < ActiveRecord::Base
   validates_presence_of :description
   validates :price, numericality: { only_integer: true, greater_than: 0 }
   validates_uniqueness_of :title, case_sensitive: false
-
-   # -------------------------------------- Scopes
+  
+  # -------------------------------------- Scopes
   
   scope :active, -> { where(active: true) }
   
@@ -21,6 +21,12 @@ class Item < ActiveRecord::Base
   
   belongs_to :category
   has_and_belongs_to_many :orders
+  has_many :reviews
   
-
+  # -------------------------------------- Instance Methods
+  
+  def average_rating
+    reviews.average(:rating).try(:round, 1)
+  end
+  
 end
